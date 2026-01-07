@@ -16,22 +16,35 @@
     <section>
       <h2>Seznam dárků</h2>
       <ul id="wishlist">
-        <li>Kvalitní termoláhev</li>
-        <li>Dárkový poukaz na kávu</li>
-        <li>Pohodlné pracovní rukavice</li>
-        <li>Teplá čepice</li>
-        <li>Balíček výběrové kávy</li>
-        <li>Multitool (nástroj do kapsy)</li>
-        <li>Pohodlné pracovní boty</li>
-        <li>Předplatné audioknih</li>
-        <li>Přenosný kávovar</li>
-        <li>Dárková karta do místního obchodu</li>
+        <li><span class="item">Kvalitní termoláhev</span><input class="picker" data-index="0" placeholder="Vaše jméno"></li>
+        <li><span class="item">Dárkový poukaz na kávu</span><input class="picker" data-index="1" placeholder="Vaše jméno"></li>
+        <li><span class="item">Pohodlné pracovní rukavice</span><input class="picker" data-index="2" placeholder="Vaše jméno"></li>
+        <li><span class="item">Teplá čepice</span><input class="picker" data-index="3" placeholder="Vaše jméno"></li>
+        <li><span class="item">Balíček výběrové kávy</span><input class="picker" data-index="4" placeholder="Vaše jméno"></li>
+        <li><span class="item">Multitool (nástroj do kapsy)</span><input class="picker" data-index="5" placeholder="Vaše jméno"></li>
+        <li><span class="item">Pohodlné pracovní boty</span><input class="picker" data-index="6" placeholder="Vaše jméno"></li>
+        <li><span class="item">Předplatné audioknih</span><input class="picker" data-index="7" placeholder="Vaše jméno"></li>
+        <li><span class="item">Přenosný kávovar</span><input class="picker" data-index="8" placeholder="Vaše jméno"></li>
+        <li><span class="item">Dárková karta do místního obchodu</span><input class="picker" data-index="9" placeholder="Vaše jméno"></li>
       </ul>
     </section>
 
     <footer>
       <p>© 2026</p>
     </footer>
+    <script>
+      (function(){
+        const saved = JSON.parse(localStorage.getItem('wishlistNames') || '{}');
+        document.querySelectorAll('#wishlist .picker').forEach(input => {
+          const idx = input.dataset.index;
+          if (saved[idx]) input.value = saved[idx];
+          input.addEventListener('input', e => {
+            saved[idx] = e.target.value;
+            localStorage.setItem('wishlistNames', JSON.stringify(saved));
+          });
+        });
+      })();
+    </script>
   </main>
 </body>
 </html>
