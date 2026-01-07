@@ -32,17 +32,60 @@
     <footer>
       <p>© 2026</p>
     </footer>
+    <!-- Optional Supabase integration: create wishlist/supabase.js from supabase.example.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
     <script>
       (function(){
-        const saved = JSON.parse(localStorage.getItem('wishlistNames') || '{}');
-        document.querySelectorAll('#wishlist .picker').forEach(input => {
-          const idx = input.dataset.index;
-          if (saved[idx]) input.value = saved[idx];
-          input.addEventListener('input', e => {
-            saved[idx] = e.target.value;
-            localStorage.setItem('wishlistNames', JSON.stringify(saved));
+        const inputs = Array.from(document.querySelectorAll('#wishlist .picker'));
+        // fallback storage functions (localStorage)
+        const local = {
+          async loadAll(){ return JSON.parse(localStorage.getItem('wishlistNames') || '{}'); },
+          async save(idx, name){ const s = JSON.parse(localStorage.getItem('wishlistNames') || '{}'); s[idx]=name; localStorage.setItem('wishlistNames', JSON.stringify(s)); }
+        };
+
+        // try to initialize Supabase if wishlist/supabase.js exists and defines SUPABASE_CONFIG
+        async function initSupabase(){
+          if (!window.SUPABASE_CONFIG) return null;
+          const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SUPABASE_CONFIG;
+          if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null;
+          try{
+            const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            // verify connection by selecting (optional)
+            return client;
+          }catch(e){ return null }
+        }
+
+        (async function(){
+          const supa = await initSupabase();
+          if (supa){
+            // load from Supabase table `wishlist_names` if present
+            try{
+              const { data, error } = await supa.from('wishlist_names').select('gift_index,name');
+              if (!error && data){
+                const map = {};
+                data.forEach(r => { map[r.gift_index]=r.name; });
+                inputs.forEach(input => {
+                  const idx = input.dataset.index;
+                  if (map[idx]) input.value = map[idx];
+                  input.addEventListener('input', async e => {
+                    const val = e.target.value;
+                    await supa.from('wishlist_names').upsert({ gift_index: parseInt(idx,10), name: val });
+                  });
+                });
+                return;
+              }
+            }catch(err){ /* fall back to local */ }
+          }
+
+          // fallback: localStorage
+          const saved = await local.loadAll();
+          inputs.forEach(input => {
+            const idx = input.dataset.index;
+            if (saved[idx]) input.value = saved[idx];
+            input.addEventListener('input', e => local.save(idx, e.target.value));
           });
-        });
+        })();
+
       })();
     </script>
   </main>
