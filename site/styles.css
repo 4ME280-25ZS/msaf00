@@ -40,24 +40,8 @@ body{
     border: none;
 }
 
-.visual{position:fixed;inset:0;pointer-events:none;display:block;z-index:0}
-.blob{position:absolute;right:-8%;top:-22%;width:120%;height:120%;transform-origin:center;opacity:0.9;mix-blend-mode:screen}
-
-.visual::before{
-    left:-8%;top:6%;width:60%;height:60%;background:radial-gradient(circle at 25% 25%, rgba(138,43,43,0.08), transparent 40%);
-}
-
-.visual::after{
-    right:-6%;bottom:-8%;width:72%;height:72%;background:radial-gradient(circle at 75% 75%, rgba(107,38,38,0.06), transparent 36%);
-}
-
-.card::before{display:none}
-
 .card{position:relative;z-index:2}
 .card > *{position:relative;z-index:3}
-
-.trash-layer{display:block}
-.trash{opacity:1;display:block}
 
 .hero{position:relative;z-index:2;margin-bottom:20px}
 .hero h1{font-size:2.2rem;letter-spacing:-0.02em;margin-bottom:6px}
